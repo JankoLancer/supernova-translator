@@ -1,0 +1,1 @@
+enum Pages { Home, Favorite }
