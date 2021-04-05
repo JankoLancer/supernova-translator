@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:provider/provider.dart';
 import 'package:supernova_translator/constants/enums.dart';
 import 'package:supernova_translator/screens/favorite_page.dart';
 import 'package:supernova_translator/screens/translation_page.dart';
+import 'package:supernova_translator/stores/connectivity_store.dart';
 import 'package:supernova_translator/stores/pages_store.dart';
+import 'package:supernova_translator/stores/translation_store.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,20 +17,30 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: Observer(
-        builder: (_) => Scaffold(
-          appBar: _buildAppBar(),
-          body: SafeArea(
-            child: PageContainer(
-              _pagesStore.selectedDestination,
+    return MultiProvider(
+      providers: [
+        Provider<TranslationStore>(
+          create: (_) => TranslationStore(),
+        ),
+        Provider<ConnectivityStore>(
+          create: (_) => ConnectivityStore(),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: Observer(
+          builder: (_) => Scaffold(
+            appBar: _buildAppBar(),
+            body: SafeArea(
+              child: PageContainer(
+                _pagesStore.selectedDestination,
+              ),
             ),
+            bottomNavigationBar: AppBottomNavigationBar(_pagesStore),
           ),
-          bottomNavigationBar: AppBottomNavigationBar(_pagesStore),
         ),
       ),
     );
@@ -88,11 +101,17 @@ class PageContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (destination) {
       case Pages.Home:
-        return TranslationPage();
+        return Consumer2<TranslationStore, ConnectivityStore>(
+          builder: (_, translationStore, connectivityStore, __) =>
+              TranslationPage(translationStore, connectivityStore),
+        );
       case Pages.Favorite:
         return FavoritePage();
       default:
-        return TranslationPage();
+        return Consumer2<TranslationStore, ConnectivityStore>(
+          builder: (_, translationStore, connectivityStore, __) =>
+              TranslationPage(translationStore, connectivityStore),
+        );
     }
   }
 }

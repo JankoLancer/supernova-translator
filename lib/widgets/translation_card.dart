@@ -43,7 +43,7 @@ class TranslationCard extends StatelessWidget {
             to!,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          if (detectedLang!.isNotEmpty) ...[
+          if (detectedLang != null && detectedLang!.isNotEmpty) ...[
             SizedBox(height: 12),
             Text(
               'Detected language: $detectedLang',
