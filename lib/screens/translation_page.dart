@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:another_flushbar/flushbar_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mobx/mobx.dart';
@@ -41,11 +41,11 @@ class _TranslationPageState extends State<TranslationPage> {
     translationController =
         TextEditingController(text: tranStore.textForTranslation);
 
-    _disposer = reaction((_) => connStore.connectivityStream.value, (result) {
-      if (result != ConnectivityResult.none && !tranStore.languageFetched) {
+    _disposer = reaction<bool>((_) => connStore.isConnected, (connected) {
+      if (connected && !tranStore.languageFetched) {
         tranStore.getLanguages();
       }
-      if (result == ConnectivityResult.none) {
+      if (!connected) {
         final currentFocus = FocusScope.of(context);
         if (!currentFocus.hasPrimaryFocus) {
           currentFocus.unfocus();

@@ -17,6 +17,21 @@ mixin _$ConnectivityStore on _ConnectivityStore, Store {
               name: '_ConnectivityStore.isConnected'))
           .value;
 
+  final _$lastStatusAtom = Atom(name: '_ConnectivityStore.lastStatus');
+
+  @override
+  ConnectivityResult get lastStatus {
+    _$lastStatusAtom.reportRead();
+    return super.lastStatus;
+  }
+
+  @override
+  set lastStatus(ConnectivityResult value) {
+    _$lastStatusAtom.reportWrite(value, super.lastStatus, () {
+      super.lastStatus = value;
+    });
+  }
+
   final _$connectivityStreamAtom =
       Atom(name: '_ConnectivityStore.connectivityStream');
 
@@ -33,9 +48,25 @@ mixin _$ConnectivityStore on _ConnectivityStore, Store {
     });
   }
 
+  final _$ckeckConnectionAsyncAction =
+      AsyncAction('_ConnectivityStore.ckeckConnection');
+
+  @override
+  Future<void> ckeckConnection() {
+    return _$ckeckConnectionAsyncAction.run(() => super.ckeckConnection());
+  }
+
+  final _$disposeAsyncAction = AsyncAction('_ConnectivityStore.dispose');
+
+  @override
+  Future dispose() {
+    return _$disposeAsyncAction.run(() => super.dispose());
+  }
+
   @override
   String toString() {
     return '''
+lastStatus: ${lastStatus},
 connectivityStream: ${connectivityStream},
 isConnected: ${isConnected}
     ''';
