@@ -1,4 +1,4 @@
-import 'package:connectivity/connectivity.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:mobx/mobx.dart';
 
 part 'connectivity_store.g.dart';
@@ -12,7 +12,7 @@ abstract class _ConnectivityStore with Store {
 
   @computed
   bool get isConnected {
-    return connectivityStream.status == StreamStatus.active &&
+    return connectivityStream.status != StreamStatus.active ||
         connectivityStream.value != ConnectivityResult.none;
   }
 
