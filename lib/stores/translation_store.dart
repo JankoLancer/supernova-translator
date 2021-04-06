@@ -2,12 +2,15 @@ import 'package:mobx/mobx.dart';
 import 'package:supernova_translator/models.dart/LanguageResponse.dart';
 import 'package:supernova_translator/models.dart/TranslateResponse.dart';
 import 'package:supernova_translator/services/network.dart';
+import 'package:supernova_translator/stores/error_store.dart';
 
 part 'translation_store.g.dart';
 
 class TranslationStore = TranslationStoreBase with _$TranslationStore;
 
 abstract class TranslationStoreBase with Store {
+  final ErrorStore errorStore = ErrorStore();
+
   @observable
   LanguageResponseList languageListTarget = LanguageResponseList(languages: []);
 
@@ -34,15 +37,19 @@ abstract class TranslationStoreBase with Store {
     final future = Network.instance.getLanguages();
     fetchLanguagesFuture = ObservableFuture(future);
 
-    languageListTarget = await future;
-    languageListSource =
-        LanguageResponseList(languages: languageListTarget.languages.toList());
-    languageListSource.languages
-        .add(LanguageResponse(language: '', name: 'Detect'));
-    languageFetched = true;
-    selectedSourceLanguage = languageListSource.languages.last;
-    selectedTargetLanguage = languageListTarget.languages
-        .firstWhere((element) => element.language == 'en');
+    try {
+      languageListTarget = await future;
+      languageListSource = LanguageResponseList(
+          languages: languageListTarget.languages.toList());
+      languageListSource.languages
+          .add(LanguageResponse(language: '', name: 'Detect'));
+      languageFetched = true;
+      selectedSourceLanguage = languageListSource.languages.last;
+      selectedTargetLanguage = languageListTarget.languages
+          .firstWhere((element) => element.language == 'en');
+    } catch (e) {
+      errorStore.errorMessage = 'Network error, try again later';
+    }
   }
 
   @observable
@@ -69,11 +76,13 @@ abstract class TranslationStoreBase with Store {
   @action
   void setSourceLanguage(LanguageResponse language) {
     selectedSourceLanguage = language;
+    translate();
   }
 
   @action
   void setTargetLanguage(LanguageResponse language) {
     selectedTargetLanguage = language;
+    translate();
   }
 
   @action
@@ -84,17 +93,27 @@ abstract class TranslationStoreBase with Store {
   }
 
   @action
-  Future<void> setTextForTranslation(String text) async {
+  void setTextForTranslation(String text) {
     if (text == textForTranslation) return;
     textForTranslation = text;
+    translate();
+  }
+
+  @action
+  Future<void> translate() async {
+    if (textForTranslation == null) return;
+
     final future = Network.instance.translate(
-      inputText: text,
+      inputText: textForTranslation!,
       sourceLanguage: selectedSourceLanguage.language,
       targetLanguage: selectedTargetLanguage.language,
     );
 
-    fetchTranslationFuture = ObservableFuture(future);
-
-    trenslatedList = await future;
+    try {
+      fetchTranslationFuture = ObservableFuture(future);
+      trenslatedList = await future;
+    } catch (e) {
+      errorStore.errorMessage = 'Network error, try again later';
+    }
   }
 }

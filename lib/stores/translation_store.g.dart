@@ -187,13 +187,11 @@ mixin _$TranslationStore on TranslationStoreBase, Store {
     return _$getLanguagesAsyncAction.run(() => super.getLanguages());
   }
 
-  final _$setTextForTranslationAsyncAction =
-      AsyncAction('TranslationStoreBase.setTextForTranslation');
+  final _$translateAsyncAction = AsyncAction('TranslationStoreBase.translate');
 
   @override
-  Future<void> setTextForTranslation(String text) {
-    return _$setTextForTranslationAsyncAction
-        .run(() => super.setTextForTranslation(text));
+  Future<void> translate() {
+    return _$translateAsyncAction.run(() => super.translate());
   }
 
   final _$TranslationStoreBaseActionController =
@@ -227,6 +225,17 @@ mixin _$TranslationStore on TranslationStoreBase, Store {
         name: 'TranslationStoreBase.swapLanguages');
     try {
       return super.swapLanguages();
+    } finally {
+      _$TranslationStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setTextForTranslation(String text) {
+    final _$actionInfo = _$TranslationStoreBaseActionController.startAction(
+        name: 'TranslationStoreBase.setTextForTranslation');
+    try {
+      return super.setTextForTranslation(text);
     } finally {
       _$TranslationStoreBaseActionController.endAction(_$actionInfo);
     }
