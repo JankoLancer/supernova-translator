@@ -3,12 +3,12 @@ import 'package:supernova_translator/constants/endpoints.dart';
 import 'package:supernova_translator/models.dart/LanguageResponse.dart';
 import 'package:supernova_translator/models.dart/TranslateResponse.dart';
 
-class Repository {
-  Repository._();
+class Network {
+  Network._();
 
-  static final Repository _instance = Repository._();
+  static final Network _instance = Network._();
 
-  static Repository get instance => _instance;
+  static Network get instance => _instance;
 
   Future<TranslateResponseList> translate({
     required String inputText,
