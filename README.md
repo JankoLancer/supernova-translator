@@ -12,7 +12,11 @@ if the app is restarted and stored locally on the device.
 | ----------- | ----------- | ----------- |
 | &check;      | &check;       | &check;       |
 
-
+## TODO
+- [ ] Add more tests
+- [ ] i18n
+- [ ] Language search
+- [ ] Save last used languages
 ## Screnshoots
 <img src="https://github.com/JankoLancer/supernova-translator/raw/master/docs/images/1.jpeg" alt="" style="max-width:100%;">
 <img src="https://github.com/JankoLancer/supernova-translator/raw/master/docs/images/2.jpeg" alt="" style="max-width:100%;">
