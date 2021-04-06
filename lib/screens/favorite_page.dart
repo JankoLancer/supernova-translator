@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:supernova_translator/stores/favorites_store.dart';
 import 'package:supernova_translator/widgets/translation_card.dart';
 
 class FavoritePage extends StatelessWidget {
-  const FavoritePage({Key? key}) : super(key: key);
+  final FavoritesStore store;
+  const FavoritePage(this.store, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -10,43 +13,30 @@ class FavoritePage extends StatelessWidget {
   }
 
   Widget _buildBody() {
-    return Column(
-      children: [
-        _buildTranslations(),
-      ],
-    );
+    return _buildTranslations();
   }
 
   Widget _buildTranslations() {
-    return Column(
-      children: [
-        SingleChildScrollView(
-          child: Column(
-            children: [
-              TranslationCard(
-                from: 'Test from',
-                to: 'Test to',
-                detectedLang: 'en',
-              ),
-              TranslationCard(
-                from: 'Test from',
-                to: 'Test to',
-                detectedLang: 'en',
-              ),
-              TranslationCard(
-                from: 'Test from',
-                to: 'Test to',
-                detectedLang: 'en',
-              ),
-              TranslationCard(
-                from: 'Test from',
-                to: 'Test to',
-                detectedLang: 'en',
-              )
-            ],
-          ),
-        )
-      ],
-    );
+    return Observer(builder: (context) {
+      return Column(
+        children: [
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                ...store.favoriteTranslation
+                    .map((element) => TranslationCard(
+                          from: element.inputText,
+                          to: element.translatedText,
+                          detectedLang: element.detectedSourceLanguage,
+                          favorited: true,
+                          onTap: () => store.removeFromFavorite(element),
+                        ))
+                    .toList()
+              ],
+            ),
+          )
+        ],
+      );
+    });
   }
 }

@@ -1,18 +1,23 @@
 import 'dart:async';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mobx/mobx.dart';
 import 'package:supernova_translator/models.dart/LanguageResponse.dart';
 import 'package:supernova_translator/stores/connectivity_store.dart';
+import 'package:supernova_translator/stores/favorites_store.dart';
 import 'package:supernova_translator/stores/translation_store.dart';
 import 'package:supernova_translator/widgets/translation_card.dart';
 
 class TranslationPage extends StatefulWidget {
   final translationStore;
   final connectivityStore;
+  final favoriteStore;
 
-  TranslationPage(this.translationStore, this.connectivityStore, {Key? key})
+  TranslationPage(
+      this.translationStore, this.connectivityStore, this.favoriteStore,
+      {Key? key})
       : super(key: key);
 
   @override
@@ -22,6 +27,7 @@ class TranslationPage extends StatefulWidget {
 class _TranslationPageState extends State<TranslationPage> {
   late TranslationStore tranStore;
   late ConnectivityStore connStore;
+  late FavoritesStore favStore;
   late TextEditingController translationController;
   Timer? _debounce;
   ReactionDisposer? _disposer;
@@ -31,13 +37,19 @@ class _TranslationPageState extends State<TranslationPage> {
     super.initState();
     tranStore = widget.translationStore;
     connStore = widget.connectivityStore;
+    favStore = widget.favoriteStore;
     translationController =
         TextEditingController(text: tranStore.textForTranslation);
 
     _disposer = reaction((_) => connStore.connectivityStream.value, (result) {
-      print(result);
-      if (result != ConnectionState.none && !tranStore.languageFetched) {
+      if (result != ConnectivityResult.none && !tranStore.languageFetched) {
         tranStore.getLanguages();
+      }
+      if (result == ConnectivityResult.none) {
+        final currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.unfocus();
+        }
       }
     });
   }
@@ -183,15 +195,20 @@ class _TranslationPageState extends State<TranslationPage> {
               child: Column(
                 children: [
                   if (tranStore.trenslatedList != null)
-                    ...tranStore.trenslatedList!.translations
-                        .map((e) => e.inputText.isNotEmpty
-                            ? TranslationCard(
-                                from: e.inputText,
-                                to: e.translatedText,
-                                detectedLang: e.detectedSourceLanguage,
-                              )
-                            : Container())
-                        .toList()
+                    ...tranStore.trenslatedList!.translations.map((e) {
+                      final favorited = favStore.containsFavorite(e);
+                      return e.inputText.isNotEmpty
+                          ? TranslationCard(
+                              from: e.inputText,
+                              to: e.translatedText,
+                              detectedLang: e.detectedSourceLanguage,
+                              favorited: favorited,
+                              onTap: favorited
+                                  ? () => favStore.removeFromFavorite(e)
+                                  : () => favStore.addToFavorite(e),
+                            )
+                          : Container();
+                    }).toList()
                 ],
               ),
             )

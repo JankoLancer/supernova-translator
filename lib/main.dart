@@ -1,19 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supernova_translator/constants/enums.dart';
 import 'package:supernova_translator/screens/favorite_page.dart';
 import 'package:supernova_translator/screens/translation_page.dart';
+import 'package:supernova_translator/services/sharedpreferences.dart';
 import 'package:supernova_translator/stores/connectivity_store.dart';
+import 'package:supernova_translator/stores/favorites_store.dart';
 import 'package:supernova_translator/stores/pages_store.dart';
 import 'package:supernova_translator/stores/translation_store.dart';
 
-void main() {
-  runApp(MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final sharedPreferences = await SharedPreferences.getInstance();
+  runApp(MyApp(sharedPreferences));
 }
 
 class MyApp extends StatelessWidget {
-  final _pagesStore = PagesStore(); // Instantiate the store
+  final _pagesStore = PagesStore();
+  final SharedPreferences sharedPreferences;
+
+  MyApp(this.sharedPreferences, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,22 +30,24 @@ class MyApp extends StatelessWidget {
         Provider<TranslationStore>(
           create: (_) => TranslationStore(),
         ),
+        Provider<PreferencesService>(
+          create: (_) => PreferencesService(sharedPreferences),
+        ),
         Provider<ConnectivityStore>(
           create: (_) => ConnectivityStore(),
         ),
+        ProxyProvider<PreferencesService, FavoritesStore>(
+            update: (_, preferencesService, __) =>
+                FavoritesStore(preferencesService))
       ],
       child: MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
+        title: 'Supernova Translator',
+        theme: ThemeData(primarySwatch: Colors.blue),
         home: Observer(
           builder: (_) => Scaffold(
             appBar: _buildAppBar(),
             body: SafeArea(
-              child: PageContainer(
-                _pagesStore.selectedDestination,
-              ),
+              child: PageContainer(_pagesStore.selectedDestination),
             ),
             bottomNavigationBar: AppBottomNavigationBar(_pagesStore),
           ),
@@ -101,17 +111,20 @@ class PageContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (destination) {
       case Pages.Home:
-        return Consumer2<TranslationStore, ConnectivityStore>(
-          builder: (_, translationStore, connectivityStore, __) =>
-              TranslationPage(translationStore, connectivityStore),
-        );
+        return Consumer3<TranslationStore, ConnectivityStore, FavoritesStore>(
+            builder:
+                (_, translationStore, connectivityStore, favoriteStore, __) =>
+                    TranslationPage(
+                        translationStore, connectivityStore, favoriteStore));
       case Pages.Favorite:
-        return FavoritePage();
+        return Consumer<FavoritesStore>(
+            builder: (_, favoriteStore, __) => FavoritePage(favoriteStore));
       default:
-        return Consumer2<TranslationStore, ConnectivityStore>(
-          builder: (_, translationStore, connectivityStore, __) =>
-              TranslationPage(translationStore, connectivityStore),
-        );
+        return Consumer3<TranslationStore, ConnectivityStore, FavoritesStore>(
+            builder:
+                (_, translationStore, connectivityStore, favoriteStore, __) =>
+                    TranslationPage(
+                        translationStore, connectivityStore, favoriteStore));
     }
   }
 }

@@ -1,7 +1,7 @@
 import 'package:mobx/mobx.dart';
 import 'package:supernova_translator/models.dart/LanguageResponse.dart';
 import 'package:supernova_translator/models.dart/TranslateResponse.dart';
-import 'package:supernova_translator/network/repository.dart';
+import 'package:supernova_translator/services/network.dart';
 
 part 'translation_store.g.dart';
 
@@ -31,7 +31,7 @@ abstract class TranslationStoreBase with Store {
 
   @action
   Future getLanguages() async {
-    final future = Repository.instance.getLanguages();
+    final future = Network.instance.getLanguages();
     fetchLanguagesFuture = ObservableFuture(future);
 
     languageListTarget = await future;
@@ -87,7 +87,7 @@ abstract class TranslationStoreBase with Store {
   Future<void> setTextForTranslation(String text) async {
     if (text == textForTranslation) return;
     textForTranslation = text;
-    final future = Repository.instance.translate(
+    final future = Network.instance.translate(
       inputText: text,
       sourceLanguage: selectedSourceLanguage.language,
       targetLanguage: selectedTargetLanguage.language,

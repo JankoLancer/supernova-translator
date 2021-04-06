@@ -21,7 +21,7 @@ class TranslateResponseList {
 class TranslateResponse {
   String? detectedSourceLanguage;
   String? model;
-  String? translatedText;
+  String translatedText;
   String inputText;
 
   TranslateResponse(
@@ -31,10 +31,30 @@ class TranslateResponse {
       required this.inputText});
 
   factory TranslateResponse.fromJson(
-          Map<String, dynamic> json, String inputText) =>
+          Map<String, dynamic> json, String? inputText) =>
       TranslateResponse(
           detectedSourceLanguage: json['detectedSourceLanguage'],
           model: json['model'],
           translatedText: json['translatedText'],
-          inputText: inputText);
+          inputText: inputText ?? json['inputText']);
+
+  Map<String, dynamic> toJson() => {
+        'detectedSourceLanguage': detectedSourceLanguage,
+        'model': model,
+        'translatedText': translatedText,
+        'inputText': inputText,
+      };
+
+  @override
+  bool operator ==(o) =>
+      o is TranslateResponse &&
+      detectedSourceLanguage == o.detectedSourceLanguage &&
+      translatedText == o.translatedText &&
+      inputText == o.inputText;
+
+  @override
+  int get hashCode =>
+      detectedSourceLanguage.hashCode *
+      translatedText.hashCode *
+      inputText.hashCode;
 }

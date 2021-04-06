@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 
 class TranslationCard extends StatelessWidget {
-  final String? from;
-  final String? to;
+  final String from;
+  final String to;
   final String? detectedLang;
+  final VoidCallback onTap;
+  final bool favorited;
 
-  const TranslationCard({
-    Key? key,
-    @required this.from,
-    @required this.to,
-    this.detectedLang = '',
-  }) : super(key: key);
+  const TranslationCard(
+      {Key? key,
+      required this.from,
+      required this.to,
+      this.detectedLang = '',
+      required this.onTap,
+      required this.favorited})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -37,10 +41,10 @@ class TranslationCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(from!),
+          Text(from),
           SizedBox(height: 4),
           Text(
-            to!,
+            to,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           if (detectedLang != null && detectedLang!.isNotEmpty) ...[
@@ -58,8 +62,10 @@ class TranslationCard extends StatelessWidget {
   Widget _buildFavorite() {
     return Flexible(
       flex: 1,
-      child:
-          IconButton(icon: Icon(Icons.favorite_border), onPressed: () => null),
+      child: IconButton(
+        icon: Icon(favorited ? Icons.favorite : Icons.favorite_border),
+        onPressed: onTap,
+      ),
     );
   }
 }
