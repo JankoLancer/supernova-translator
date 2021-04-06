@@ -69,9 +69,26 @@ class _TranslationPageState extends State<TranslationPage> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        _handleErrorMessage(),
         _buildNewTranslation(),
         _buildTranslations(),
       ],
+    );
+  }
+
+  Widget _handleErrorMessage() {
+    return Observer(
+      builder: (context) {
+        if (tranStore.errorStore.errorMessage.isNotEmpty) {
+          Future.delayed(Duration(milliseconds: 0), () {
+            FlushbarHelper.createError(
+              message: tranStore.errorStore.errorMessage,
+              duration: Duration(seconds: 3),
+            ).show(context);
+          });
+        }
+        return Container();
+      },
     );
   }
 
