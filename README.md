@@ -1,16 +1,23 @@
+<img alt="Flutter" src="https://img.shields.io/badge/Flutter%20-%2302569B.svg?&style=for-the-badge&logo=Flutter&logoColor=white" />
+
 # supernova_translator
 
-A new Flutter project.
+The translation app will allow you to select the source and output language (source will also
+allow auto-detect option) and will fetch the results from the Google API using provided API
+key. Once the result is shown, users can set the phrase as favorite, which will be listed in the
+second section of the app - the search favorite history. Favorites should be persistent even
+if the app is restarted and stored locally on the device.
 
-## Getting Started
+| Android      | iOS | WEB |
+| ----------- | ----------- | ----------- |
+| &check;      | &check;       | &check;       |
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+## Screnshoots
+<img src="https://github.com/JankoLancer/supernova-translator/raw/master/docs/images/1.jpeg" alt="" style="max-width:100%;">
+<img src="https://github.com/JankoLancer/supernova-translator/raw/master/docs/images/2.jpeg" alt="" style="max-width:100%;">
+<img src="https://github.com/JankoLancer/supernova-translator/raw/master/docs/images/3.jpeg" alt="" style="max-width:100%;">
+<img src="https://github.com/JankoLancer/supernova-translator/raw/master/docs/images/4.jpeg" alt="" style="max-width:100%;">
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+

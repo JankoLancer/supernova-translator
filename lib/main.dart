@@ -43,6 +43,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Supernova Translator',
         theme: ThemeData(primarySwatch: Colors.blue),
+        debugShowCheckedModeBanner: false,
         home: Observer(
           builder: (_) => Scaffold(
             appBar: _buildAppBar(),
