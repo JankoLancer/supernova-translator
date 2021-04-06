@@ -13,7 +13,7 @@ class FavoritePage extends StatelessWidget {
   }
 
   Widget _buildBody() {
-    return _buildTranslations();
+    return SingleChildScrollView(child: _buildTranslations());
   }
 
   Widget _buildTranslations() {

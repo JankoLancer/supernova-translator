@@ -203,39 +203,46 @@ class _TranslationPageState extends State<TranslationPage> {
   }
 
   Widget _buildTranslations() {
-    return Observer(builder: (context) {
-      return Column(
-        children: [
-          Text('Translations'),
-          if (!tranStore.isTranslationLoading)
-            SingleChildScrollView(
-              child: Column(
-                children: [
-                  if (tranStore.trenslatedList != null)
-                    ...tranStore.trenslatedList!.translations.map((e) {
-                      final favorited = favStore.containsFavorite(e);
-                      return e.inputText.isNotEmpty
-                          ? TranslationCard(
-                              from: e.inputText,
-                              to: e.translatedText,
-                              detectedLang: e.detectedSourceLanguage,
-                              favorited: favorited,
-                              onTap: favorited
-                                  ? () => favStore.removeFromFavorite(e)
-                                  : () => favStore.addToFavorite(e),
-                            )
-                          : Container();
-                    }).toList()
-                ],
-              ),
-            )
-          else
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: CircularProgressIndicator(),
-            )
-        ],
-      );
-    });
+    return Expanded(
+      child: Observer(builder: (context) {
+        return Column(
+          children: [
+            Text('Translations'),
+            if (!tranStore.isTranslationLoading)
+              Expanded(
+                child: SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(),
+                    child: Column(
+                      children: [
+                        if (tranStore.trenslatedList != null)
+                          ...tranStore.trenslatedList!.translations.map((e) {
+                            final favorited = favStore.containsFavorite(e);
+                            return e.inputText.isNotEmpty
+                                ? TranslationCard(
+                                    from: e.inputText,
+                                    to: e.translatedText,
+                                    detectedLang: e.detectedSourceLanguage,
+                                    favorited: favorited,
+                                    onTap: favorited
+                                        ? () => favStore.removeFromFavorite(e)
+                                        : () => favStore.addToFavorite(e),
+                                  )
+                                : Container();
+                          }).toList()
+                      ],
+                    ),
+                  ),
+                ),
+              )
+            else
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: CircularProgressIndicator(),
+              )
+          ],
+        );
+      }),
+    );
   }
 }
